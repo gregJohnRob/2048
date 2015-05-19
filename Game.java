@@ -55,7 +55,7 @@ public class Game {
 
   public static void down(Element[][] board) {
     for (int i = 3; i >= 0; i--) {
-      for (int j = 3; j >= 0; j++) {
+      for (int j = 3; j >= 0; j--) {
         int tempI = i;
         while (canMoveDown(board, tempI, j)) {
           moveDown(board, tempI, j);
@@ -71,15 +71,30 @@ public class Game {
    * TODO: these functions
   */
   public static boolean canMoveLeft(Element[][] board, int i, int j) {
-    return false;
+    return j > 0
+    && board[i][j] != null
+    && (board[i][j-1] == null || board[i][j].canCombine(board[i][j-1]));
   }
 
   public static void moveLeft(Element[][] board, int i, int j) {
-
+    if (board[i][j-1] == null) {
+      board[i][j-1] = board[i][j];
+    } else {
+      board[i][j-1].combine(board[i][j]);
+    }
+    board[i][j] = null;
   }
 
   public static void left(Element[][] board) {
-
+    for (int i = 0; i < 4; i++) {
+      for (int j = 0; j < 4; j++) {
+        int tempJ = j;
+        while (canMoveLeft(board, i, tempJ)) {
+          moveLeft(board, i, tempJ);
+          tempJ--;
+        }
+      }
+    }
   }
 
   /*
@@ -87,14 +102,31 @@ public class Game {
    * TODO: these functions
   */
   public static boolean canMoveRight(Element[][] board, int i, int j) {
-    return false;
+    return j < 3
+    && board[i][j] != null
+    && (board[i][j+1] == null || board[i][j].canCombine(board[i][j+1]));
   }
 
   public static void moveRight(Element[][] board, int i, int j) {
+    if (board[i][j+1] == null) {
+      board[i][j+1] = board[i][j];
+    } else {
+      board[i][j+1].combine(board[i][j]);
+    }
+    board[i][j] = null;
 
   }
 
   public static void right(Element[][] board) {
+    for (int i = 3; i >= 0; i--) {
+      for (int j = 3; j >= 0; j--) {
+        int tempJ = j;
+        while (canMoveRight(board, i, tempJ)) {
+          moveRight(board, i, tempJ);
+          tempJ--;
+        }
+      }
+    }
 
   }
 
@@ -134,11 +166,14 @@ public class Game {
           down(board);
           break;
         case "left":
+          left(board);
           break;
         case "right":
+          right(board);
           break;
         default:
           System.out.println("Invalid move");
+          System.exit(0);
       }
     }
 
