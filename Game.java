@@ -1,6 +1,32 @@
 import java.util.Scanner;
 import java.util.Random;
-public class Game {
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import java.awt.GridLayout;
+import javax.swing.JLabel;
+
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+public class Game extends JFrame {
+
+  Element[][] board = new Element[4][4];
+
+  JPanel panel = new JPanel();
+  JButton b = new JButton("Hello");
+  JButton test = new JButton("test");
+
+  public Game() {
+
+    super("2048");
+
+    setSize(600,600);
+    setResizable(false);
+    setDefaultCloseOperation(EXIT_ON_CLOSE);
+  }
 
   /*
    * The functions related to the move up command.
@@ -8,13 +34,13 @@ public class Game {
    * moveUp will move up an element
    * up is a loop which will check each column in turn to preform all valid moves
   */
-  public static boolean canMoveUp(Element[][] board, int i, int j) {
-    return i > 0
+  public boolean canMoveUp(int i, int j) {
+    return i > 0 && i < 4
       && board[i][j] != null
       && (board[i-1][j] == null || board[i][j].canCombine(board[i-1][j]));
   }
 
-  public static void moveUp(Element[][] board, int i, int j) {
+  public void moveUp(int i, int j) {
     if (board[i-1][j] == null) {
       board[i-1][j] = board[i][j];
     } else {
@@ -23,12 +49,12 @@ public class Game {
     board[i][j] = null;
   }
 
-  public static void up(Element[][] board) {
+  public void up() {
     for (int i = 0; i < 4; i++) {
       for (int j = 0; j < 4; j++) {
         int tempI = i;
-        while (canMoveUp(board, tempI, j)) {
-          moveUp(board, tempI, j);
+        while (canMoveUp(tempI, j)) {
+          moveUp(tempI, j);
           tempI--;
         }
       }
@@ -38,13 +64,13 @@ public class Game {
   /*
    * The functions related to move down command
   */
-  public static boolean canMoveDown(Element[][] board, int i, int j) {
-    return i < 3
+  public boolean canMoveDown(int i, int j) {
+    return i < 3 && i > -1
       && board[i][j] != null
       && (board[i+1][j] == null || board[i][j].canCombine(board[i+1][j]));
   }
 
-  public static void moveDown(Element[][] board, int i, int j) {
+  public void moveDown(int i, int j) {
     if (board[i+1][j] == null) {
       board[i+1][j] = board[i][j];
     } else {
@@ -53,12 +79,12 @@ public class Game {
     board[i][j] = null;
   }
 
-  public static void down(Element[][] board) {
+  public void down() {
     for (int i = 3; i >= 0; i--) {
       for (int j = 3; j >= 0; j--) {
         int tempI = i;
-        while (canMoveDown(board, tempI, j)) {
-          moveDown(board, tempI, j);
+        while (canMoveDown( tempI, j)) {
+          moveDown(tempI, j);
           tempI++;
         }
       }
@@ -68,15 +94,14 @@ public class Game {
 
   /*
    * The functions related to move left command,
-   * TODO: these functions
   */
-  public static boolean canMoveLeft(Element[][] board, int i, int j) {
-    return j > 0
+  public boolean canMoveLeft(int i, int j) {
+    return j > 0 && j < 4
     && board[i][j] != null
     && (board[i][j-1] == null || board[i][j].canCombine(board[i][j-1]));
   }
 
-  public static void moveLeft(Element[][] board, int i, int j) {
+  public void moveLeft(int i, int j) {
     if (board[i][j-1] == null) {
       board[i][j-1] = board[i][j];
     } else {
@@ -85,12 +110,12 @@ public class Game {
     board[i][j] = null;
   }
 
-  public static void left(Element[][] board) {
+  public void left() {
     for (int i = 0; i < 4; i++) {
       for (int j = 0; j < 4; j++) {
         int tempJ = j;
-        while (canMoveLeft(board, i, tempJ)) {
-          moveLeft(board, i, tempJ);
+        while (canMoveLeft(i, tempJ)) {
+          moveLeft(i, tempJ);
           tempJ--;
         }
       }
@@ -99,15 +124,14 @@ public class Game {
 
   /*
    * The functions related to move right command
-   * TODO: these functions
   */
-  public static boolean canMoveRight(Element[][] board, int i, int j) {
-    return j < 3
+  public boolean canMoveRight( int i, int j) {
+    return j < 3 && j > -1
     && board[i][j] != null
     && (board[i][j+1] == null || board[i][j].canCombine(board[i][j+1]));
   }
 
-  public static void moveRight(Element[][] board, int i, int j) {
+  public void moveRight( int i, int j) {
     if (board[i][j+1] == null) {
       board[i][j+1] = board[i][j];
     } else {
@@ -117,21 +141,22 @@ public class Game {
 
   }
 
-  public static void right(Element[][] board) {
+  public void right() {
     for (int i = 3; i >= 0; i--) {
       for (int j = 3; j >= 0; j--) {
         int tempJ = j;
-        while (canMoveRight(board, i, tempJ)) {
-          moveRight(board, i, tempJ);
-          tempJ--;
+        while (canMoveRight( i, tempJ)) {
+          moveRight( i, tempJ);
+          tempJ++;
         }
       }
     }
 
   }
 
+
   public static void main(String args[]) {
-    Element[][] board = new Element[4][4];
+    Game game = new Game();
     Scanner user = new Scanner(System.in);
     Random random = new Random();
     int x;
@@ -143,33 +168,36 @@ public class Game {
       do {
         x = random.nextInt(4);
         y = random.nextInt(4);
-      } while (board[x][y] != null);
-      board[x][y] = new Element((1 + random.nextInt(2)) * 2);
+      } while (game.board[x][y] != null);
+      game.board[x][y] = new Element((1 + random.nextInt(2)) * 2);
+      game.panel = new JPanel();
+      game.panel.setLayout(new GridLayout(4, 4));
       for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
-          if (board[i][j] != null) {
-            System.out.print(board[i][j].toString() + " ");
+          if (game.board[i][j] != null) {
+            game.panel.add(new JLabel((game.board[i][j].toString() + " ")));
           } else {
-            System.out.print("0000 ");
+            game.panel.add(new JLabel(("0000 ")));
           }
         }
-        System.out.println("");
       }
+      game.setContentPane(game.panel);
+      game.setVisible(true);
       System.out.println("\n Your next move? ");
       move = user.next();
       move = move.toLowerCase();
       switch(move) {
         case "up":
-          up(board);
+          game.up();
           break;
         case "down":
-          down(board);
+          game.down();
           break;
         case "left":
-          left(board);
+          game.left();
           break;
         case "right":
-          right(board);
+          game.right();
           break;
         default:
           System.out.println("Invalid move");
